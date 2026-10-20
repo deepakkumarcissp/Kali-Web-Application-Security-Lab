@@ -37,15 +37,19 @@ Environment:
 USAGE
 }
 
-# Prefer the Compose v2 plugin, then fall back to standalone docker-compose.
-if docker compose version >/dev/null 2>&1; then
-  COMPOSE=(docker compose)
+# Detect both Compose version and Docker permissions before choosing the command.
+if docker info >/dev/null 2>&1; then
+  DOCKER=(docker)
+elif command -v sudo >/dev/null 2>&1 && sudo docker info >/dev/null 2>&1; then
+  DOCKER=(sudo docker)
+else
+  die "Docker is unavailable or the current account cannot access it. Run ./install.sh and check the Docker service."
+fi
+
+if "${DOCKER[@]}" compose version >/dev/null 2>&1; then
+  COMPOSE=( "${DOCKER[@]}" compose )
 elif command -v docker-compose >/dev/null 2>&1; then
-  COMPOSE=(docker-compose)
-elif command -v sudo >/dev/null 2>&1 && sudo docker compose version >/dev/null 2>&1; then
-  COMPOSE=(sudo docker compose)
-elif command -v sudo >/dev/null 2>&1 && sudo docker-compose version >/dev/null 2>&1; then
-  COMPOSE=(sudo docker-compose)
+  if [[ "${DOCKER[0]}" == "sudo" ]]; then COMPOSE=(sudo docker-compose); else COMPOSE=(docker-compose); fi
 else
   die "Docker Compose is unavailable. Run ./install.sh first."
 fi
@@ -57,7 +61,7 @@ wait_for_http() {
   local attempt
   info "Waiting for the application health check..."
   for attempt in $(seq 1 45); do
-    if command -v curl >/dev/null 2>&1 && curl --silent --show-error --fail --max-time 2 "$url" >/dev/null 2>&1; then
+    if command -v curl >/dev/null 2>&1 && curl --silent --fail --max-time 2 "$url" >/dev/null 2>&1; then
       ok "Application is responding."
       printf "\nDKCISSP LAB READY\n"
       printf "URL: %s\n" "$url"
