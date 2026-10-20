@@ -1,0 +1,28 @@
+name: dkcissp-web-lab
+
+services:
+  juice-shop:
+    image: bkimminich/juice-shop:v17.1.1
+    container_name: dkcissp-web-lab-juice-shop
+    restart: unless-stopped
+    ports:
+      # Host-only binding: do not change to 0.0.0.0 for the default lab.
+      - "127.0.0.1:${DKCISSP_PORT:-3000}:3000"
+    networks:
+      - dkcissp-lab
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    init: true
+    labels:
+      org.dkcissp.lab: "web-application-security"
+      org.dkcissp.managed-by: "dkcissp-lab-controller"
+
+networks:
+  dkcissp-lab:
+    name: dkcissp-web-lab-network
+    driver: bridge
