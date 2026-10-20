@@ -34,6 +34,15 @@ If port 3000 is already in use, select another port:
 DKCISSP_PORT=3001 ./lab.sh start
 ```
 
+## Guided missions
+
+The first release includes learning guides for:
+- [Mission 01 — Injection and input handling](docs/missions/mission-01-injection.md)
+- [Mission 02 — Broken access control](docs/missions/mission-02-access-control.md)
+- [Mission 03 — Cross-site scripting](docs/missions/mission-03-xss.md)
+
+Each mission asks learners to capture evidence, explain the likely root cause, propose a fix, and describe how to retest it.
+
 ## Lab commands
 
 ```bash
@@ -68,7 +77,7 @@ Docker access can grant root-equivalent control of the host. Review installation
 ## Current scope and roadmap
 
 1. **Foundation:** local app deployment, lifecycle commands, health check, documentation.
-2. **Learning experience:** guided missions with evidence, hints, remediation, and retesting.
+2. **Learning experience:** richer mission evidence, hints, remediation, and retesting.
 3. **Optional tooling:** scanner integration and defensive telemetry, enabled only when needed.
 
 ## Troubleshooting
