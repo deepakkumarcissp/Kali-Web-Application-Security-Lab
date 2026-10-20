@@ -1,0 +1,21 @@
+name: Validate lab files
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate shell syntax
+        run: |
+          bash -n install.sh
+          bash -n lab.sh
+
+      - name: Check Compose configuration
+        run: docker compose -f docker-compose.yml config --quiet
