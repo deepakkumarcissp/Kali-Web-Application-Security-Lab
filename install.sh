@@ -50,6 +50,23 @@ if ! command -v docker >/dev/null 2>&1; then
   esac
 fi
 
+if ! command -v curl >/dev/null 2>&1; then
+  warn "curl is required for the application health check."
+  if command -v apt-get >/dev/null 2>&1; then
+    printf "Install curl using the system package manager? [y/N] "
+    read -r answer
+    case "$answer" in
+      y|Y|yes|YES)
+        if [[ "$EUID" -eq 0 ]]; then SUDO=(); else SUDO=(sudo); fi
+        "${SUDO[@]}" apt-get install -y curl
+        ;;
+      *) die "curl is required. Install it, then rerun ./install.sh." ;;
+    esac
+  else
+    die "Install curl, then rerun ./install.sh."
+  fi
+fi
+
 if docker info >/dev/null 2>&1; then
   DOCKER=(docker)
 elif command -v sudo >/dev/null 2>&1; then
@@ -71,7 +88,6 @@ ok "Docker and Compose are available."
 
 export COMPOSE_PROJECT_NAME="dkcissp-web-lab"
 
-# Validate Compose before starting anything. Avoid newer-only CLI flags for Kali compatibility.
 "${COMPOSE[@]}" -f "$ROOT_DIR/docker-compose.yml" config >/dev/null
 ok "Lab configuration validated."
 
