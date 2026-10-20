@@ -1,6 +1,6 @@
 # DKCISSP Guided Missions
 
-These mission sheets add learning structure around the intentionally vulnerable Juice Shop application. Complete them only against the local lab at `http://127.0.0.1:3000`.
+These mission sheets add learning structure around the intentionally vulnerable Juice Shop application. Complete them only against the local lab at `http://127.0.0.1:1002`.
 
 For each mission, record:
 1. The security question you are investigating.
