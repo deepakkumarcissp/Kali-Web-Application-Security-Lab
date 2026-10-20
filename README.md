@@ -36,20 +36,20 @@ The installer validates the Compose configuration, starts the lab, and waits for
 
 Open this address in the browser on the same Kali machine:
 
-**http://127.0.0.1:1002**
+**http://127.0.0.1:1003**
 
 A successful start reports `DKCISSP LAB READY`, the local URL, and that the network exposure is localhost-only.
 
-If port 1002 is already in use, choose another local port:
+If port 1003 is already in use, choose another local port:
 
 ```bash
-DKCISSP_PORT=1003 ./lab.sh start
+DKCISSP_PORT=1004 ./lab.sh start
 ```
 
 Use the same `DKCISSP_PORT` value for other commands that check the URL, for example:
 
 ```bash
-DKCISSP_PORT=1003 ./lab.sh status
+DKCISSP_PORT=1004 ./lab.sh status
 ```
 
 ## What happens automatically
@@ -153,10 +153,10 @@ sudo systemctl start docker
 
 The script checks whether Docker is available to your account and can try `sudo docker` when appropriate. If access still fails, check the Docker service and your system's Docker permissions. Do not grant broader Docker access without understanding the security implications.
 
-### Port 1002 is already in use
+### Port 1003 is already in use
 
 ```bash
-DKCISSP_PORT=1003 ./lab.sh start
+DKCISSP_PORT=1004 ./lab.sh start
 ```
 
 If you select a different port, use that same `DKCISSP_PORT` setting when checking status.

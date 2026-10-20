@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-export DKCISSP_PORT="${DKCISSP_PORT:-1002}"
+export DKCISSP_PORT="${DKCISSP_PORT:-1003}"
 BASE_URL="http://127.0.0.1:${DKCISSP_PORT}"
 
 BLUE='\033[0;34m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'; RESET='\033[0m'

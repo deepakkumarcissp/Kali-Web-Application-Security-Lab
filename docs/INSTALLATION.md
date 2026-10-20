@@ -12,7 +12,7 @@ This is one copy-paste setup command. During development, the repository may req
 
 ## What success looks like
 
-The installer should validate the Compose file, start the Juice Shop container, and wait for an HTTP response. It should print a local URL, usually `http://127.0.0.1:1002`.
+The installer should validate the Compose file, start the Juice Shop container, and wait for an HTTP response. It should print a local URL, usually `http://127.0.0.1:1003`.
 
 ## Before reporting a problem
 

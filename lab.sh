@@ -4,7 +4,7 @@ set -Eeuo pipefail
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-dkcissp-web-lab}"
-export DKCISSP_PORT="${DKCISSP_PORT:-1002}"
+export DKCISSP_PORT="${DKCISSP_PORT:-1003}"
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'; BLUE='\033[0;34m'; RESET='\033[0m'
 info() { printf "${BLUE}[DKCISSP]${RESET} %s\n" "$*"; }
@@ -35,7 +35,7 @@ Commands:
   destroy  Remove the lab container and its dedicated network after confirmation.
 
 Environment:
-  DKCISSP_PORT=1003 ./lab.sh start   Use another localhost port (default: 1002).
+  DKCISSP_PORT=1004 ./lab.sh start   Use another localhost port (default: 1003).
 USAGE
 }
 
