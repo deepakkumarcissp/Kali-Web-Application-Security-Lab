@@ -24,14 +24,14 @@ The repository may be private while it is being developed. Learners will need re
 
 The installer checks Docker and Compose. If Docker is missing on an apt-based system, it asks before installing system packages. Installing system packages may require your sudo password. It then validates the Compose configuration, starts the application, and waits for an HTTP response.
 
-Open the URL printed by the installer, normally:
+Open the URL printed by the installer. The default address is:
 
-`http://127.0.0.1:3000`
+`http://127.0.0.1:1002`
 
-If port 3000 is already in use, select another port:
+If port 1002 is already in use, select another localhost port:
 
 ```bash
-DKCISSP_PORT=3001 ./lab.sh start
+DKCISSP_PORT=1003 ./lab.sh start
 ```
 
 ## Guided missions
@@ -85,7 +85,7 @@ Docker access can grant root-equivalent control of the host. Review installation
 - Docker service not running: `sudo systemctl start docker`
 - Check service status: `./lab.sh status`
 - Inspect logs: `./lab.sh logs`
-- Choose another port: `DKCISSP_PORT=3001 ./lab.sh start`
+- Choose another port: `DKCISSP_PORT=1003 ./lab.sh start`
 - Review the Compose file before running if you customize the lab.
 
 ## Third-party software
