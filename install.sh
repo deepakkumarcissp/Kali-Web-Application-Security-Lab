@@ -52,39 +52,28 @@ fi
 
 if docker info >/dev/null 2>&1; then
   DOCKER=(docker)
-elif command -v sudo >/dev/null 2>&1 && sudo -n docker info >/dev/null 2>&1; then
+elif command -v sudo >/dev/null 2>&1; then
   DOCKER=(sudo docker)
+  "${DOCKER[@]}" info >/dev/null || die "Docker is installed but unavailable. Check that the Docker service is running."
 else
-  warn "The current account cannot access Docker; checking whether sudo is available."
-  if command -v sudo >/dev/null 2>&1; then
-    DOCKER=(sudo docker)
-    "${DOCKER[@]}" info >/dev/null || die "Docker is installed but unavailable. Check that the Docker service is running."
-  else
-    die "Docker is installed but inaccessible. Start the Docker service and check permissions."
-  fi
+  die "Docker is installed but inaccessible. Install sudo or check Docker service permissions."
 fi
 
 if "${DOCKER[@]}" compose version >/dev/null 2>&1; then
   COMPOSE=( "${DOCKER[@]}" compose )
 elif command -v docker-compose >/dev/null 2>&1; then
-  if "${DOCKER[@]}" ps >/dev/null 2>&1; then
-    COMPOSE=(docker-compose)
-    if [[ "${DOCKER[0]}" == "sudo" ]]; then COMPOSE=(sudo docker-compose); fi
-  else
-    die "Docker Compose was found but cannot access Docker."
-  fi
+  if [[ "${DOCKER[0]}" == "sudo" ]]; then COMPOSE=(sudo docker-compose); else COMPOSE=(docker-compose); fi
 else
   die "Docker Compose is missing. Install docker-compose or the Docker Compose plugin, then rerun this installer."
 fi
 
 ok "Docker and Compose are available."
 
-# Use a dedicated project name so this lab does not manage unrelated containers.
 export COMPOSE_PROJECT_NAME="dkcissp-web-lab"
 
-# Validate Compose before starting anything.
+# Validate Compose before starting anything. Avoid newer-only CLI flags for Kali compatibility.
 "${COMPOSE[@]}" -f "$ROOT_DIR/docker-compose.yml" config >/dev/null
 ok "Lab configuration validated."
 
 info "Starting the local DKCISSP Web Application Security Lab..."
-"$ROOT_DIR/lab.sh" start --compose-command "${COMPOSE[*]}"
+"$ROOT_DIR/lab.sh" start
