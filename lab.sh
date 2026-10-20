@@ -20,6 +20,7 @@ Usage:
   ./lab.sh start
   ./lab.sh status
   ./lab.sh logs
+  ./lab.sh scenarios
   ./lab.sh stop
   ./lab.sh reset
   ./lab.sh destroy
@@ -28,6 +29,7 @@ Commands:
   start    Start the lab and wait for its HTTP health check.
   status   Show container status and local URL.
   logs     Follow application logs (Ctrl+C to exit).
+  scenarios Open the guided local security-test scenario menu.
   stop     Stop the lab without deleting its container.
   reset    Recreate the application container; this discards its writable state.
   destroy  Remove the lab container and its dedicated network after confirmation.
@@ -94,6 +96,9 @@ case "$command_name" in
     ;;
   logs)
     compose logs --tail=200 -f
+    ;;
+  scenarios)
+    exec "$ROOT_DIR/scenarios.sh"
     ;;
   stop)
     compose stop

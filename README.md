@@ -41,6 +41,14 @@ The first release includes learning guides for:
 - [Mission 02 — Broken access control](docs/missions/mission-02-access-control.md)
 - [Mission 03 — Cross-site scripting](docs/missions/mission-03-xss.md)
 
+Start the interactive terminal menu with:
+
+```bash
+./lab.sh scenarios
+```
+
+The first scenario is a guided broken-access-control workflow. It walks through establishing normal behavior, inspecting browser requests, checking the authorization boundary in the local training app, interpreting evidence, and documenting remediation. Injection and XSS checklists are also available. The menu guides the tester; it does not automatically claim a vulnerability has been found.
+
 Each mission asks learners to capture evidence, explain the likely root cause, propose a fix, and describe how to retest it.
 
 ## Lab commands
@@ -57,6 +65,7 @@ Each mission asks learners to capture evidence, explain the likely root cause, p
 - `start`: starts the application and checks its HTTP response.
 - `status`: shows Compose status and attempts an HTTP check.
 - `logs`: follows recent application logs; press Ctrl+C to stop following.
+- `scenarios`: opens the guided local security-test menu.
 - `stop`: stops the service while retaining its container.
 - `reset`: asks for confirmation, then recreates the application container. Writable application state is discarded.
 - `destroy`: asks for confirmation and removes the lab container and dedicated network. It does not remove the downloaded image.
