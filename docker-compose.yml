@@ -43,6 +43,10 @@ services:
       - dkcissp-lab
     security_opt:
       - no-new-privileges:true
+    # The upstream image healthcheck calls curl, which is not installed in
+    # the image. The lab controller performs host-side HTTP readiness checks.
+    healthcheck:
+      disable: true
     labels:
       org.dkcissp.lab: "web-application-security"
       org.dkcissp.managed-by: "dkcissp-lab-controller"
