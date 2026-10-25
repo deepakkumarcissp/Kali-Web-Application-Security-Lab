@@ -1,25 +1,18 @@
 # DKCISSP Web Application Security Lab
 
-A local-first web application security testing lab for Kali Linux. The goal is simple: spend less time preparing infrastructure and more time learning how to test, document, fix, and retest web application security issues.
+**One installer. Three local vulnerable web applications. One repeatable lab.**
 
-The first version runs **OWASP Juice Shop** locally in Docker and provides guided testing scenarios. It is a practical lab—not an academy, hosted service, or production security scanner.
+The DKCISSP Web Application Security Lab is a Docker-based training environment for Kali Linux and authorized web application security testing. A single installer prepares/checks the required tools and starts all three targets together:
 
-> **Current status:** MVP for local testing. The repository has automated configuration checks and has been exercised on the maintainer's Kali machine, but it has not been validated on every supported installation. Guided scenarios help you investigate; they do not automatically certify that a vulnerability exists.
+- **OWASP Juice Shop** — a modern web application for discovering and testing common web/API weaknesses.
+- **DVWA (Damn Vulnerable Web Application)** — a PHP application for practicing classic web vulnerability checks.
+- **OWASP WebGoat** — guided lessons and exercises for learning web application security.
 
-## Quick start
+This is a deliberately vulnerable training environment, not a production service and not a scanner by itself. It provides local targets that a tester or DKCISSP scanner can assess.
 
-### Requirements
+## Quick start: install all three in one go
 
-- Kali Linux or another Debian-family Linux system using `apt`
-- Git, Docker Engine, Docker Compose, and `curl`
-- Internet access for the initial repository clone and Juice Shop image download
-- Suggested starting point: 2 CPU cores and 4 GB RAM for the Kali VM
-
-Keep the lab on a dedicated test machine or VM where possible. Docker access can provide root-equivalent control of the host.
-
-### First-time setup
-
-From a Kali terminal, run:
+Run these commands on your Kali Linux machine:
 
 ```bash
 git clone https://github.com/deepakkumarcissp/Kali-Web-Application-Security-Lab.git
@@ -28,174 +21,119 @@ chmod +x install.sh lab.sh scenarios.sh
 ./install.sh
 ```
 
-If the repository is private, your GitHub account must have access before cloning. The installer checks for Docker and Compose. If Docker is missing on an apt-based system, it asks before installing system packages; installation may require your sudo password. Review the prompt before approving it.
+**That single `./install.sh` command starts Juice Shop, DVWA, and WebGoat together.** You do not need to install each application separately.
 
-The installer validates the Compose configuration, starts the lab, and waits for an HTTP response. It does not silently add your account to the Docker group.
+What happens during installation:
 
-### When setup finishes
+1. Checks that the system is Linux/Kali and that required files are present.
+2. Checks Docker and Docker Compose availability. If Docker is missing on an apt-based system, it asks before installing packages.
+3. Checks for `curl`, which is used for HTTP readiness checks.
+4. Validates the Docker Compose configuration.
+5. Downloads the required container images if they are not already available.
+6. Starts all three applications and checks whether their local URLs respond.
 
-Open this address in the browser on the same Kali machine:
+The first setup can take several minutes depending on your internet connection and machine. Keep the terminal open until the installer finishes. If an application is still starting or fails its readiness check, use the troubleshooting commands below.
 
-**http://127.0.0.1:1003**
+### Open the three applications
 
-A successful start reports `DKCISSP LAB READY`, the local URL, and that the network exposure is localhost-only.
+After startup, open these URLs **on the same Kali machine**:
 
-If port 1003 is already in use, choose another local port:
+| Application | URL | Default port |
+|---|---|---:|
+| OWASP Juice Shop | http://127.0.0.1:1003 | 1003 |
+| DVWA | http://127.0.0.1:1006 | 1006 |
+| OWASP WebGoat | http://127.0.0.1:1007/WebGoat | 1007 |
 
-```bash
-DKCISSP_PORT=1004 ./lab.sh start
-```
+The installer publishes the applications on the loopback interface (`127.0.0.1`) so they are not intentionally exposed to your LAN or the Internet.
 
-Use the same `DKCISSP_PORT` value for other commands that check the URL, for example:
+## Manage the lab
 
-```bash
-DKCISSP_PORT=1004 ./lab.sh status
-```
-
-## What happens automatically
-
-After you start the installer, the lab:
-
-1. Checks that the host is Linux and that the Compose configuration exists.
-2. Checks Docker access and Docker Compose availability.
-3. Asks before installing missing Docker packages or `curl` on supported apt-based systems.
-4. Validates the Compose configuration.
-5. Starts the Juice Shop container.
-6. Waits up to 90 seconds for an HTTP response.
-7. Prints the local URL and next step if the health check succeeds.
-8. Gives troubleshooting commands if the health check does not pass.
-
-The lab uses a pinned OWASP Juice Shop image tag for reproducibility. The published container port is bound to `127.0.0.1` by default; it is not intended to be exposed to your LAN or the Internet.
-
-## Everyday commands
-
-Run these from the repository directory:
+Run commands from the repository directory:
 
 | Command | What it does |
 |---|---|
-| `./lab.sh start` | Start the lab and wait for its HTTP health check. |
-| `./lab.sh status` | Show container status, local URL, and a health-check result. |
-| `./lab.sh scenarios` | Open the guided security-testing menu. |
-| `./lab.sh logs` | Follow recent application logs; press Ctrl+C to stop following. |
-| `./lab.sh stop` | Stop the service while retaining its container. |
-| `./lab.sh reset` | Ask for confirmation, then recreate the application container. Writable application state is discarded. |
-| `./lab.sh destroy` | Ask for confirmation, then remove the lab container and its dedicated network. The downloaded image is retained. |
-| `./lab.sh --help` | Display the command summary. |
+| `./lab.sh start` | Starts all three applications and checks their HTTP responses. |
+| `./lab.sh status` | Shows container status and checks each target URL. |
+| `./lab.sh logs` | Follows logs for the lab services; press Ctrl+C to stop following. |
+| `./lab.sh scenarios` | Opens the guided local security-testing scenario menu. |
+| `./lab.sh stop` | Stops all three services but retains their containers. |
+| `./lab.sh reset` | Recreates the three containers after confirmation; writable container state is discarded. |
+| `./lab.sh destroy` | Removes the lab containers and dedicated network after confirmation. Downloaded images are retained. |
+| `./lab.sh --help` | Displays available commands and target URLs. |
 
-Reset and destroy are intentionally confirmation-gated. Read the prompt before continuing.
-
-## Guided security-testing scenarios
-
-Launch the interactive menu:
+To start the lab again later, return to the repository directory and run:
 
 ```bash
-./lab.sh scenarios
+./lab.sh start
 ```
 
-The current menu includes:
+### If a port is already in use
 
-1. **Broken access control** — a guided workflow for checking authorization boundaries.
-2. **Injection** — an input-handling checklist.
-3. **Cross-site scripting (XSS)** — a safe testing checklist.
-4. **Local target health** — check whether the lab responds.
+You can choose alternative local ports for the lab:
 
-The guides are intentionally human-led. They help you establish normal behavior, inspect requests, test only the local training application, interpret what you observe, record sanitized evidence, and think through remediation and retesting. The presence of a checklist is not proof that a vulnerability exists.
+```bash
+DKCISSP_PORT=1013 DKCISSP_DVWA_PORT=1016 DKCISSP_WEBGOAT_PORT=1017 ./lab.sh start
+```
 
-### Mission guides
+Use the same environment variables for later `status`, `logs`, `stop`, `reset`, or `destroy` commands when you need to refer to those non-default ports.
 
-- [Mission 01 — Injection and input handling](docs/missions/mission-01-injection.md)
-- [Mission 02 — Broken access control](docs/missions/mission-02-access-control.md)
-- [Mission 03 — Cross-site scripting](docs/missions/mission-03-xss.md)
+## Suggested scanner validation workflow
 
-For each exercise, aim to capture:
+Use the three applications as different test targets:
 
-- **Objective:** What security property are you checking?
-- **Baseline:** What should a normal, authorized user be able to do?
-- **Observation:** What request or response provides evidence?
-- **Finding:** What did you actually observe? Avoid assumptions.
-- **Root cause:** Which missing or incorrect control could explain it?
-- **Remediation:** What should the application owner change?
-- **Retest:** What evidence would show that the fix works?
+1. **Discovery and crawling — Juice Shop:** validate URL discovery, route coverage, and modern web/API behavior.
+2. **PHP-oriented checks — DVWA:** exercise input handling and common PHP application patterns.
+3. **Guided test cases — WebGoat:** validate selected vulnerability classes against lessons designed for training.
+4. **Triage:** retain evidence, deduplicate findings, verify severity, and track false positives.
+5. **Retest:** repeat the same checks after changing a test condition and compare the results.
 
-Do not include real credentials, session tokens, personal data, or other secrets in screenshots or reports.
+Begin with passive discovery and non-destructive checks. Perform exploit validation only against these local training targets and only when you understand the potential impact. A response code or automated scanner alert alone does not prove a vulnerability; manually verify findings.
 
 ## Safety and scope
 
-OWASP Juice Shop is deliberately vulnerable. Use this project only for authorized practice against the local lab instance.
+**These applications are intentionally vulnerable. Do not deploy them as production applications.**
 
-- Keep the published address bound to `127.0.0.1`. Do not change it to `0.0.0.0` or expose it to the Internet.
-- Do not point scanners or test scripts at systems you do not own or have explicit permission to assess.
-- Use synthetic accounts and data. Never reuse production credentials.
-- Review installation prompts and Compose configuration before approving changes.
+- Keep published ports bound to `127.0.0.1`. Do not change them to `0.0.0.0` or expose the targets to a LAN or the public Internet.
+- Scan only these local targets unless you have explicit authorization for another system.
+- Use synthetic accounts and data; never use production credentials.
+- Review installation prompts before approving system package changes.
 - Docker access can grant root-equivalent control of the host.
-- This project is not designed for production use and does not replace a professional security assessment.
+- This repository orchestrates third-party projects. Review their upstream documentation, licensing, and image update notes.
 
 ## Troubleshooting
 
-### Docker is not installed
-
-Run:
-
-```bash
-./install.sh
-```
-
-On a supported apt-based system, the installer asks whether to install Docker packages. You can decline and install/configure Docker yourself, then run the installer again.
-
-### Docker service is not running
-
-```bash
-sudo systemctl start docker
-./lab.sh status
-```
-
-### Docker permission error
-
-The script checks whether Docker is available to your account and can try `sudo docker` when appropriate. If access still fails, check the Docker service and your system's Docker permissions. Do not grant broader Docker access without understanding the security implications.
-
-### Port 1003 is already in use
-
-```bash
-DKCISSP_PORT=1004 ./lab.sh start
-```
-
-If you select a different port, use that same `DKCISSP_PORT` setting when checking status.
-
-### The application does not become healthy
+Check the service state and logs:
 
 ```bash
 ./lab.sh status
 ./lab.sh logs
 ```
 
-The startup health check waits up to 90 seconds. If the container is still starting, inspect the logs and try the status command again. Check that Docker has enough memory and that the selected port is available.
-
-### Compose configuration fails
-
-Review `docker-compose.yml` and validate it with:
+If Docker is not running:
 
 ```bash
-docker compose -f docker-compose.yml config
+sudo systemctl start docker
+./lab.sh status
 ```
 
-If your installation uses the standalone Compose command, try `docker-compose -f docker-compose.yml config`.
+If a target does not respond, check its container logs, available memory, and whether its host port is already in use. WebGoat may take longer to initialize during first startup. Do not assume the lab is ready until the target URL responds.
 
-## How the project is tested
+Validate the Compose file:
 
-The repository's CI workflow validates shell syntax and the Docker Compose configuration. Local smoke tests have also checked the guided menu, the access-control walkthrough, and the local HTTP health response on the maintainer's Kali machine.
+```bash
+docker compose -f docker-compose.yml config --quiet
+```
 
-These checks are not a full security audit, and they do not prove that every scenario finds a vulnerability. Installation behavior, scanner integrations, and every reset/destroy edge case still require continued testing on supported systems.
+## DKCISSP website integration
 
-## Roadmap
+The repository provides the local lab installer. A DKCISSP website page can link to this repository and show the quick-start commands and target ports. A normal browser page cannot silently install software on a visitor's Kali machine: the user must run the commands locally. Keep the vulnerable targets on the user's machine and do not publish them as public DKCISSP-hosted services.
 
-1. **Reliable foundation:** local deployment, lifecycle commands, health checks, clear errors, and documentation.
-2. **Better guided missions:** consistent steps, evidence capture, hints, remediation, and retesting.
-3. **More practical scenarios:** expand coverage across the OWASP Top 10 with clear scope and safety boundaries.
-4. **Optional tooling:** add scanner integrations and defensive telemetry only when needed, with explicit user control.
-5. **Reporting:** produce a clear, evidence-based summary of observations, risk, recommended fixes, and retest results.
+## Upstream projects
 
-Planned items are not yet implemented unless explicitly described as available above.
+This repository orchestrates these independent training applications and does not claim ownership of them:
 
-## Third-party software
+- [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/)
+- [DVWA](https://github.com/digininja/DVWA)
+- [OWASP WebGoat](https://owasp.org/www-project-webgoat/)
 
-This project orchestrates [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/); it does not claim ownership of that software. Review its project documentation and license before redistribution. The image tag is pinned for reproducibility and should only be updated after validation.
+Before using this lab in a tester onboarding workflow, test the complete installation on the target Kali environment and verify that all three applications respond as expected.
