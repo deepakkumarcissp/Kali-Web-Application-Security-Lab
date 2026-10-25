@@ -5,22 +5,26 @@
 From a Kali Linux terminal:
 
 ```bash
-git clone https://github.com/deepakkumarcissp/Kali-Web-Application-Security-Lab.git && cd Kali-Web-Application-Security-Lab && chmod +x install.sh lab.sh && ./install.sh
+git clone https://github.com/deepakkumarcissp/Kali-Web-Application-Security-Lab.git && cd Kali-Web-Application-Security-Lab && chmod +x install.sh lab.sh scenarios.sh && ./install.sh
 ```
 
-This is one copy-paste setup command. During development, the repository may require GitHub access. The installer can ask for permission to install Docker packages on an apt-based system; system package installation requires administrative privileges.
+The installer starts all three local training applications: OWASP Juice Shop, DVWA, and OWASP WebGoat. During the first run, Docker downloads the images, so allow several minutes. If Docker is missing, the installer asks before installing packages on supported apt-based systems.
 
-## What success looks like
+## Local URLs
 
-The installer should validate the Compose file, start the Juice Shop container, and wait for an HTTP response. It should print a local URL, usually `http://127.0.0.1:1003`.
+- Juice Shop: http://127.0.0.1:1003
+- DVWA: http://127.0.0.1:1004
+- WebGoat: http://127.0.0.1:1005/WebGoat
 
-## Before reporting a problem
+These addresses are bound to localhost and intended for access from the same Kali machine only.
 
-Run:
+## Verify the installation
 
 ```bash
 ./lab.sh status
 ./lab.sh logs
 ```
 
-When reporting a problem, include your Kali version, Docker/Compose version, the failed command, and sanitized output. Never include credentials or private tokens.
+The health check can take several minutes while WebGoat initializes. If one target does not respond, inspect its container logs and check available memory and port conflicts.
+
+Never expose these intentionally vulnerable targets to the Internet or scan systems without explicit authorization.
