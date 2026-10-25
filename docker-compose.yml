@@ -4,7 +4,7 @@ services:
     container_name: dkcissp-web-lab-juice-shop
     restart: unless-stopped
     ports:
-      # Host-only binding: do not change to 0.0.0.0 for the default lab.
+      # Keep intentionally vulnerable targets bound to loopback only.
       - "127.0.0.1:${DKCISSP_PORT:-1003}:3000"
     networks:
       - dkcissp-lab
@@ -15,6 +15,34 @@ services:
     tmpfs:
       - /tmp:size=64m,mode=1777
     init: true
+    labels:
+      org.dkcissp.lab: "web-application-security"
+      org.dkcissp.managed-by: "dkcissp-lab-controller"
+
+  dvwa:
+    image: vulnerables/web-dvwa
+    container_name: dkcissp-web-lab-dvwa
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${DKCISSP_DVWA_PORT:-1004}:80"
+    networks:
+      - dkcissp-lab
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      org.dkcissp.lab: "web-application-security"
+      org.dkcissp.managed-by: "dkcissp-lab-controller"
+
+  webgoat:
+    image: webgoat/webgoat
+    container_name: dkcissp-web-lab-webgoat
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${DKCISSP_WEBGOAT_PORT:-1005}:8080"
+    networks:
+      - dkcissp-lab
+    security_opt:
+      - no-new-privileges:true
     labels:
       org.dkcissp.lab: "web-application-security"
       org.dkcissp.managed-by: "dkcissp-lab-controller"
