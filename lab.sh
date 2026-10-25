@@ -5,6 +5,8 @@ ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-dkcissp-web-lab}"
 export DKCISSP_PORT="${DKCISSP_PORT:-1003}"
+export DKCISSP_DVWA_PORT="${DKCISSP_DVWA_PORT:-1004}"
+export DKCISSP_WEBGOAT_PORT="${DKCISSP_WEBGOAT_PORT:-1005}"
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'; BLUE='\033[0;34m'; RESET='\033[0m'
 info() { printf "${BLUE}[DKCISSP]${RESET} %s\n" "$*"; }
@@ -25,21 +27,25 @@ Usage:
   ./lab.sh reset
   ./lab.sh destroy
 
-Commands:
-  start    Start the lab and wait for its HTTP health check.
-  status   Show container status and local URL.
-  logs     Follow application logs (Ctrl+C to exit).
-  scenarios Open the guided local security-test scenario menu.
-  stop     Stop the lab without deleting its container.
-  reset    Recreate the application container; this discards its writable state.
-  destroy  Remove the lab container and its dedicated network after confirmation.
+Targets (localhost only):
+  OWASP Juice Shop  http://127.0.0.1:1003
+  DVWA              http://127.0.0.1:1004
+  OWASP WebGoat     http://127.0.0.1:1005/WebGoat
 
-Environment:
-  DKCISSP_PORT=1004 ./lab.sh start   Use another localhost port (default: 1003).
+Commands:
+  start     Start all three vulnerable training applications.
+  status    Show containers and health checks for all targets.
+  logs      Follow lab logs (Ctrl+C to exit).
+  scenarios Open the guided local security-test scenario menu.
+  stop      Stop all lab services without deleting their containers.
+  reset     Recreate all lab services after confirmation.
+  destroy   Remove lab containers and the dedicated network after confirmation.
+
+Optional port overrides:
+  DKCISSP_PORT=1013 DKCISSP_DVWA_PORT=1014 DKCISSP_WEBGOAT_PORT=1015 ./lab.sh start
 USAGE
 }
 
-# Detect both Compose version and Docker permissions before choosing the command.
 if docker info >/dev/null 2>&1; then
   DOCKER=(docker)
 elif command -v sudo >/dev/null 2>&1 && sudo docker info >/dev/null 2>&1; then
@@ -58,23 +64,43 @@ fi
 
 compose() { "${COMPOSE[@]}" -f "$ROOT_DIR/docker-compose.yml" "$@"; }
 
+print_urls() {
+  printf '\nLocal training targets (loopback only):\n'
+  printf '  Juice Shop : http://127.0.0.1:%s\n' "$DKCISSP_PORT"
+  printf '  DVWA       : http://127.0.0.1:%s\n' "$DKCISSP_DVWA_PORT"
+  printf '  WebGoat    : http://127.0.0.1:%s/WebGoat\n' "$DKCISSP_WEBGOAT_PORT"
+  printf 'Network exposure: localhost only\n'
+}
+
+check_url() {
+  local label="$1" url="$2"
+  if command -v curl >/dev/null 2>&1 && curl --silent --fail --max-time 4 "$url" >/dev/null 2>&1; then
+    ok "$label is responding."
+    return 0
+  fi
+  warn "$label is not responding yet."
+  return 1
+}
+
 wait_for_http() {
-  local url="http://127.0.0.1:${DKCISSP_PORT}/"
-  local attempt
-  info "Waiting for the application health check..."
-  for attempt in $(seq 1 45); do
-    if command -v curl >/dev/null 2>&1 && curl --silent --fail --max-time 2 "$url" >/dev/null 2>&1; then
-      ok "Application is responding."
-      printf "\nDKCISSP LAB READY\n"
-      printf "URL: %s\n" "$url"
-      printf "Network exposure: localhost only\n"
-      printf "Next: open the URL in your browser and begin your first practice exercise.\n"
+  local attempt juice=0 dvwa=0 webgoat=0
+  info "Waiting for the training applications to start (up to 4 minutes)..."
+  for attempt in $(seq 1 120); do
+    if [[ "$juice" -eq 0 ]] && curl --silent --fail --max-time 2 "http://127.0.0.1:$DKCISSP_PORT/" >/dev/null 2>&1; then juice=1; fi
+    if [[ "$dvwa" -eq 0 ]] && curl --silent --fail --max-time 2 "http://127.0.0.1:$DKCISSP_DVWA_PORT/" >/dev/null 2>&1; then dvwa=1; fi
+    if [[ "$webgoat" -eq 0 ]] && curl --silent --fail --max-time 2 "http://127.0.0.1:$DKCISSP_WEBGOAT_PORT/WebGoat" >/dev/null 2>&1; then webgoat=1; fi
+    if [[ "$juice" -eq 1 && "$dvwa" -eq 1 && "$webgoat" -eq 1 ]]; then
+      ok "All three training applications are responding."
+      printf '\nDKCISSP LAB READY\n'
+      print_urls
+      printf 'Use only for authorized testing of these local training targets.\n'
       return 0
     fi
     sleep 2
   done
-  warn "The application did not become healthy within 90 seconds."
-  printf "Check logs with: ./lab.sh logs\n" >&2
+  warn "One or more targets did not pass the HTTP check within 4 minutes."
+  print_urls
+  printf 'Inspect services with: ./lab.sh status && ./lab.sh logs\n' >&2
   return 1
 }
 
@@ -87,12 +113,10 @@ case "$command_name" in
     ;;
   status)
     compose ps
-    printf "\nLocal URL: http://127.0.0.1:${DKCISSP_PORT}/\n"
-    if command -v curl >/dev/null 2>&1 && curl --silent --fail --max-time 2 "http://127.0.0.1:${DKCISSP_PORT}/" >/dev/null; then
-      ok "HTTP health check passed."
-    else
-      warn "HTTP health check did not pass."
-    fi
+    print_urls
+    check_url "Juice Shop" "http://127.0.0.1:$DKCISSP_PORT/" || true
+    check_url "DVWA" "http://127.0.0.1:$DKCISSP_DVWA_PORT/" || true
+    check_url "WebGoat" "http://127.0.0.1:$DKCISSP_WEBGOAT_PORT/WebGoat" || true
     ;;
   logs)
     compose logs --tail=200 -f
@@ -102,10 +126,10 @@ case "$command_name" in
     ;;
   stop)
     compose stop
-    ok "Lab stopped. Container resources have been retained."
+    ok "All lab services stopped. Container resources have been retained."
     ;;
   reset)
-    printf "Reset will recreate the Juice Shop container and discard its writable state. Continue? [y/N] "
+    printf "Reset will recreate all three training containers and discard their writable state. Continue? [y/N] "
     read -r answer
     case "$answer" in
       y|Y|yes|YES) compose down; compose up -d; wait_for_http ;;
@@ -113,7 +137,7 @@ case "$command_name" in
     esac
     ;;
   destroy)
-    printf "Destroy will remove this lab's container and dedicated network. Continue? [y/N] "
+    printf "Destroy will remove all three lab containers and the dedicated network. Continue? [y/N] "
     read -r answer
     case "$answer" in
       y|Y|yes|YES) compose down --remove-orphans; ok "Lab containers and dedicated network removed." ;;
