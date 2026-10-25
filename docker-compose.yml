@@ -24,7 +24,7 @@ services:
     container_name: dkcissp-web-lab-dvwa
     restart: unless-stopped
     ports:
-      - "127.0.0.1:${DKCISSP_DVWA_PORT:-1004}:80"
+      - "127.0.0.1:${DKCISSP_DVWA_PORT:-1006}:80"
     networks:
       - dkcissp-lab
     security_opt:
@@ -38,7 +38,7 @@ services:
     container_name: dkcissp-web-lab-webgoat
     restart: unless-stopped
     ports:
-      - "127.0.0.1:${DKCISSP_WEBGOAT_PORT:-1005}:8080"
+      - "127.0.0.1:${DKCISSP_WEBGOAT_PORT:-1007}:8080"
     networks:
       - dkcissp-lab
     security_opt:
