@@ -77,17 +77,30 @@ DKCISSP_PORT=1013 DKCISSP_DVWA_PORT=1016 DKCISSP_WEBGOAT_PORT=1017 ./lab.sh star
 
 Use the same environment variables for later `status`, `logs`, `stop`, `reset`, or `destroy` commands when you need to refer to those non-default ports.
 
-## Suggested scanner validation workflow
+## Use these targets with the DKCISSP Web Security Scanner
 
-Use the three applications as different test targets:
+The lab provides vulnerable applications; the separate scanner performs the assessment. Both projects are maintained separately:
 
-1. **Discovery and crawling — Juice Shop:** validate URL discovery, route coverage, and modern web/API behavior.
-2. **PHP-oriented checks — DVWA:** exercise input handling and common PHP application patterns.
-3. **Guided test cases — WebGoat:** validate selected vulnerability classes against lessons designed for training.
-4. **Triage:** retain evidence, deduplicate findings, verify severity, and track false positives.
-5. **Retest:** repeat the same checks after changing a test condition and compare the results.
+- **Lab installer:** [DKCISSP Kali Web Application Security Lab](https://github.com/deepakkumarcissp/Kali-Web-Application-Security-Lab)
+- **Scanner:** [DKCISSP Web Security Scanner](https://github.com/deepakkumarcissp/Web-Security-Scanner)
 
-Begin with passive discovery and non-destructive checks. Perform exploit validation only against these local training targets and only when you understand the potential impact. A response code or automated scanner alert alone does not prove a vulnerability; manually verify findings.
+### End-to-end workflow
+
+1. **Start the lab.** In the lab repository, run `./install.sh` and wait until it reports that the three targets are responding.
+2. **Start the scanner.** Follow the scanner repository's setup instructions and open its local dashboard at `http://127.0.0.1:1005`.
+3. **Register each target.** In the scanner's **Asset Inventory**, add the exact target URL from the table above, confirm you are authorized to test it, and set its scope to **In Scope**. Repeat only for the targets you intend to assess.
+4. **Choose the target.** In **Assess Website**, select the target from **DKCISSP Local Lab Target**. The selector fills the URL only; it does not register or approve the target for you.
+5. **Authorize and scan.** Confirm the scan authorization checkbox and start with **Quick** for a low-impact baseline, or **Standard** for broader bounded discovery. Use **Active** only when you intentionally want active payload testing and understand its impact.
+6. **Review the evidence.** Inspect the findings, affected URLs, evidence, severity, and remediation guidance. Treat automated results as leads to verify—not as proof by themselves.
+7. **Retest.** After changing the lab or a test condition, run the same profile again and compare the completed scans.
+
+| Application | URL to register in Asset Inventory |
+|---|---|
+| OWASP Juice Shop | `http://127.0.0.1:1003` |
+| DVWA | `http://127.0.0.1:1006` |
+| OWASP WebGoat | `http://127.0.0.1:1007/WebGoat` |
+
+Start with passive and non-destructive checks. Use exploit validation only against these local training targets and only when you understand the potential impact. A response code or automated scanner alert alone does not prove a vulnerability; manually verify findings.
 
 ## Safety and scope
 
