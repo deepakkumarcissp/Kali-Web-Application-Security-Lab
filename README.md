@@ -28,13 +28,13 @@ All targets are bound to loopback addresses and should be accessed from the same
 | Application | Local URL | Default host port |
 |---|---|---:|
 | OWASP Juice Shop | http://127.0.0.1:1003 | 1003 |
-| DVWA | http://127.0.0.1:1004 | 1004 |
-| OWASP WebGoat | http://127.0.0.1:1005/WebGoat | 1005 |
+| DVWA | http://127.0.0.1:1006 | 1006 |
+| OWASP WebGoat | http://127.0.0.1:1007/WebGoat | 1007 |
 
 If any port is already in use, override the ports for a command:
 
 ```bash
-DKCISSP_PORT=1013 DKCISSP_DVWA_PORT=1014 DKCISSP_WEBGOAT_PORT=1015 ./lab.sh start
+DKCISSP_PORT=1013 DKCISSP_DVWA_PORT=1016 DKCISSP_WEBGOAT_PORT=1017 ./lab.sh start
 ```
 
 Use the same port variables for `status`, `logs`, `stop`, `reset`, or `destroy` when you have overridden defaults.
