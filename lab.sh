@@ -5,8 +5,8 @@ ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-dkcissp-web-lab}"
 export DKCISSP_PORT="${DKCISSP_PORT:-1003}"
-export DKCISSP_DVWA_PORT="${DKCISSP_DVWA_PORT:-1004}"
-export DKCISSP_WEBGOAT_PORT="${DKCISSP_WEBGOAT_PORT:-1005}"
+export DKCISSP_DVWA_PORT="${DKCISSP_DVWA_PORT:-1006}"
+export DKCISSP_WEBGOAT_PORT="${DKCISSP_WEBGOAT_PORT:-1007}"
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[0;33m'; BLUE='\033[0;34m'; RESET='\033[0m'
 info() { printf "${BLUE}[DKCISSP]${RESET} %s\n" "$*"; }
@@ -29,8 +29,8 @@ Usage:
 
 Targets (localhost only):
   OWASP Juice Shop  http://127.0.0.1:1003
-  DVWA              http://127.0.0.1:1004
-  OWASP WebGoat     http://127.0.0.1:1005/WebGoat
+  DVWA              http://127.0.0.1:1006
+  OWASP WebGoat     http://127.0.0.1:1007/WebGoat
 
 Commands:
   start     Start all three vulnerable training applications.
@@ -42,7 +42,7 @@ Commands:
   destroy   Remove lab containers and the dedicated network after confirmation.
 
 Optional port overrides:
-  DKCISSP_PORT=1013 DKCISSP_DVWA_PORT=1014 DKCISSP_WEBGOAT_PORT=1015 ./lab.sh start
+  DKCISSP_PORT=1013 DKCISSP_DVWA_PORT=1016 DKCISSP_WEBGOAT_PORT=1017 ./lab.sh start
 USAGE
 }
 
