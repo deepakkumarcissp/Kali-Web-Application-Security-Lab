@@ -13,8 +13,8 @@ The installer starts all three local training applications: OWASP Juice Shop, DV
 ## Local URLs
 
 - Juice Shop: http://127.0.0.1:1003
-- DVWA: http://127.0.0.1:1004
-- WebGoat: http://127.0.0.1:1005/WebGoat
+- DVWA: http://127.0.0.1:1006
+- WebGoat: http://127.0.0.1:1007/WebGoat
 
 These addresses are bound to localhost and intended for access from the same Kali machine only.
 
