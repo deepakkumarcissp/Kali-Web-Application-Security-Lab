@@ -72,6 +72,7 @@ Run commands from the repository directory:
 To start the lab again later, return to the repository directory and run:
 
 ```bash
+cd ~/Kali-Web-Application-Security-Lab   # or wherever you cloned it
 ./lab.sh start
 ```
 
