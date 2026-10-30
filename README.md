@@ -46,6 +46,14 @@ After startup, open these URLs **on the same Kali machine**:
 
 The installer publishes the applications on the loopback interface (`127.0.0.1`) so they are not intentionally exposed to your LAN or the Internet.
 
+### Default credentials / first login
+
+| Application | First login |
+|---|---|
+| OWASP Juice Shop | No login required to browse. Register your own account from the **Account** menu for personalized features. The application also ships with a seeded administrator account, but recovering its credentials is one of the built-in Juice Shop challenges — they are intentionally not published here. |
+| DVWA | One-time setup required: open `http://127.0.0.1:1006/setup.php` and click **Create / Reset Database**. After that, log in with the default credentials `admin` / `password`. |
+| OWASP WebGoat | No default account. Register your own account the first time you open `http://127.0.0.1:1007/WebGoat`. |
+
 ## Manage the lab
 
 Run commands from the repository directory:
@@ -77,30 +85,34 @@ DKCISSP_PORT=1013 DKCISSP_DVWA_PORT=1016 DKCISSP_WEBGOAT_PORT=1017 ./lab.sh star
 
 Use the same environment variables for later `status`, `logs`, `stop`, `reset`, or `destroy` commands when you need to refer to those non-default ports.
 
-## Use these targets with the DKCISSP Web Security Scanner
+## Where the lab lives, and restarting after a reboot
 
-The lab provides vulnerable applications; the separate scanner performs the assessment. Both projects are maintained separately:
+### Default location
 
-- **Lab installer:** [DKCISSP Kali Web Application Security Lab](https://github.com/deepakkumarcissp/Kali-Web-Application-Security-Lab)
-- **Scanner:** [DKCISSP Web Security Scanner](https://github.com/deepakkumarcissp/Web-Security-Scanner)
+This lab is not "installed" to a fixed system path. It lives wherever you ran `git clone` from the Quick start steps above — if you cloned it from your home directory, that's `~/Kali-Web-Application-Security-Lab`. Every command (`./install.sh`, `./lab.sh ...`) must be run from inside that folder. To find it later:
 
-### End-to-end workflow
+```bash
+find ~ -maxdepth 3 -iname "Kali-Web-Application-Security-Lab" -type d 2>/dev/null
+```
 
-1. **Start the lab.** In the lab repository, run `./install.sh` and wait until it reports that the three targets are responding.
-2. **Start the scanner.** Follow the scanner repository's setup instructions and open its local dashboard at `http://127.0.0.1:1005`.
-3. **Register each target.** In the scanner's **Asset Inventory**, add the exact target URL from the table above, confirm you are authorized to test it, and set its scope to **In Scope**. Repeat only for the targets you intend to assess.
-4. **Choose the target.** In **Assess Website**, select the target from **DKCISSP Local Lab Target**. The selector fills the URL only; it does not register or approve the target for you.
-5. **Authorize and scan.** Confirm the scan authorization checkbox and start with **Quick** for a low-impact baseline, or **Standard** for broader bounded discovery. Use **Active** only when you intentionally want active payload testing and understand its impact.
-6. **Review the evidence.** Inspect the findings, affected URLs, evidence, severity, and remediation guidance. Treat automated results as leads to verify—not as proof by themselves.
-7. **Retest.** After changing the lab or a test condition, run the same profile again and compare the completed scans.
+You can move or rename the cloned folder freely — nothing here is hardcoded to a fixed absolute path, since all scripts resolve paths relative to their own location. Docker's own image and container data is stored separately, in Docker's data root (`/var/lib/docker` by default on Kali/Debian); that's managed by the Docker engine itself, not by this repository.
 
-| Application | URL to register in Asset Inventory |
-|---|---|
-| OWASP Juice Shop | `http://127.0.0.1:1003` |
-| DVWA | `http://127.0.0.1:1006` |
-| OWASP WebGoat | `http://127.0.0.1:1007/WebGoat` |
+### Starting the lab again after restarting your laptop
 
-Start with passive and non-destructive checks. Use exploit validation only against these local training targets and only when you understand the potential impact. A response code or automated scanner alert alone does not prove a vulnerability; manually verify findings.
+**Manual start** — go back to the repository folder and run:
+
+```bash
+cd ~/Kali-Web-Application-Security-Lab   # or wherever you cloned it
+./lab.sh start
+```
+
+**Automatic start** — every lab container is already configured with `restart: unless-stopped`, so once started they come back on their own whenever the Docker *engine* restarts. That only happens automatically if the Docker service itself is enabled to start at boot. Enable it once:
+
+```bash
+sudo systemctl enable docker
+```
+
+After that, a reboot brings Docker back up, and Docker restarts the lab containers for you — no manual command needed. If you'd rather keep manual control instead, leave Docker's autostart disabled (or run `sudo systemctl disable docker` to turn it back off) and just run `./lab.sh start` yourself whenever you want the lab running.
 
 ## Safety and scope
 
