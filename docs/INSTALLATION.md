@@ -18,6 +18,12 @@ The installer starts all three local training applications: OWASP Juice Shop, DV
 
 These addresses are bound to localhost and intended for access from the same Kali machine only.
 
+## Default credentials / first login
+
+- **Juice Shop** — no login required to browse; register your own account from the **Account** menu for personalized features. The application ships with a seeded administrator account, but recovering its credentials is one of the built-in Juice Shop challenges, so they are intentionally not published here.
+- **DVWA** — one-time setup required: open `http://127.0.0.1:1006/setup.php` and click **Create / Reset Database**. Then log in with the default credentials `admin` / `password`.
+- **WebGoat** — no default account; register your own account the first time you open `http://127.0.0.1:1007/WebGoat`.
+
 ## Verify the installation
 
 ```bash
