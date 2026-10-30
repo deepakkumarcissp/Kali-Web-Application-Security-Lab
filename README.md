@@ -85,6 +85,35 @@ DKCISSP_PORT=1013 DKCISSP_DVWA_PORT=1016 DKCISSP_WEBGOAT_PORT=1017 ./lab.sh star
 
 Use the same environment variables for later `status`, `logs`, `stop`, `reset`, or `destroy` commands when you need to refer to those non-default ports.
 
+## Where the lab lives, and restarting after a reboot
+
+### Default location
+
+This lab is not "installed" to a fixed system path. It lives wherever you ran `git clone` from the Quick start steps above — if you cloned it from your home directory, that's `~/Kali-Web-Application-Security-Lab`. Every command (`./install.sh`, `./lab.sh ...`) must be run from inside that folder. To find it later:
+
+```bash
+find ~ -maxdepth 3 -iname "Kali-Web-Application-Security-Lab" -type d 2>/dev/null
+```
+
+You can move or rename the cloned folder freely — nothing here is hardcoded to a fixed absolute path, since all scripts resolve paths relative to their own location. Docker's own image and container data is stored separately, in Docker's data root (`/var/lib/docker` by default on Kali/Debian); that's managed by the Docker engine itself, not by this repository.
+
+### Starting the lab again after restarting your laptop
+
+**Manual start** — go back to the repository folder and run:
+
+```bash
+cd ~/Kali-Web-Application-Security-Lab   # or wherever you cloned it
+./lab.sh start
+```
+
+**Automatic start** — every lab container is already configured with `restart: unless-stopped`, so once started they come back on their own whenever the Docker *engine* restarts. That only happens automatically if the Docker service itself is enabled to start at boot. Enable it once:
+
+```bash
+sudo systemctl enable docker
+```
+
+After that, a reboot brings Docker back up, and Docker restarts the lab containers for you — no manual command needed. If you'd rather keep manual control instead, leave Docker's autostart disabled (or run `sudo systemctl disable docker` to turn it back off) and just run `./lab.sh start` yourself whenever you want the lab running.
+
 ## Safety and scope
 
 **These applications are intentionally vulnerable. Do not deploy them as production applications.**
